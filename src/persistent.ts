@@ -63,8 +63,8 @@ export type PersistentStore<T extends z.ZodTypeAny> = Writable<z.TypeOf<T>> & {
  *
  * You need to supply the type of the schema as the type for T. T is not the
  * type of the store's value, but should be the type of the latest schema in the
- * SchemaHistory object. V is the union of all previous schemas used in
- * migrations and defaults to the base zod type `z.ZodTypeAny`. U is the type of
+ * SchemaHistory object. U is the union of all previous schemas used in
+ * migrations and defaults to the base zod type `z.ZodTypeAny`. V is the type of
  * the store's value and is inferred from T by default.
  *
  * @param  key  A unique key for the store, this will be prefixed with
@@ -86,11 +86,11 @@ export type PersistentStore<T extends z.ZodTypeAny> = Writable<z.TypeOf<T>> & {
  */
 export const persistent = <
   T extends z.ZodTypeAny,
-  V extends z.ZodTypeAny | z.ZodTypeAny = z.ZodTypeAny,
-  U = z.infer<T>
+  U extends z.ZodTypeAny | z.ZodTypeAny = z.ZodTypeAny,
+  V = z.infer<T>
 >(
   key: string,
-  schemaHistory: SchemaHistory<T, V>,
+  schemaHistory: SchemaHistory<T, U>,
   defaultValue = getLatestSchemaDefaultValue(schemaHistory),
   currentVersion = getLatestSchemaVersion(schemaHistory)
 ): PersistentStore<T> => {
@@ -103,9 +103,9 @@ export const persistent = <
     setPromise: Promise.resolve(),
   };
 
-  const { set, subscribe } = writable<U>(defaultValue);
+  const { set, subscribe } = writable<V>(defaultValue);
 
-  const save = (value: U) => {
+  const save = (value: V) => {
     const result = parseSchema(currentSchema)(value);
 
     if (E.isLeft(result)) {
@@ -120,7 +120,7 @@ export const persistent = <
     });
   };
 
-  const update = (updater: (value: U) => U) => {
+  const update = (updater: (value: V) => V) => {
     const value = updater(__.value);
 
     try {
