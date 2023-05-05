@@ -7,13 +7,18 @@
     "test": "jest --coverage",
     "test:watch": "jest --watch --coverage",
     "build": "tsc",
-    "gen:docs": "jsdoc2md --files ./src/index.ts > README.md",
-    "publish": ""
+    "gen:jsdoc2md": "jsdoc2md --files ./dist/index.js > ./README.md",
+    "gen:typedoc": "typedoc --out ./docs ./src/index.ts",
+    "gen:docs": "run-s -l build gen:typedoc"
   },
   "keywords": [],
   "author": {
     "name": "SilentEcho",
     "email": "silent@silentecho.eu"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SilentEchoGM/svelte-persistent-store"
   },
   "svelte": "src/index.ts",
   "license": "ISC",
@@ -22,9 +27,11 @@
     "@types/semver": "^7.3.13",
     "jest": "^29.5.0",
     "jsdoc-to-markdown": "^8.0.0",
+    "npm-run-all": "^4.1.5",
     "prettier": "2.8.7",
     "prettier-plugin-jsdoc": "^0.4.2",
-    "ts-jest": "^29.0.5"
+    "ts-jest": "^29.0.5",
+    "typedoc": "^0.24.6"
   },
   "peerDependencies": {
     "fp-ts": "^2.13.1",
