@@ -6,10 +6,10 @@
   "scripts": {
     "test": "jest --coverage",
     "test:watch": "jest --watch --coverage",
-    "build": "tsc",
-    "gen:jsdoc2md": "jsdoc2md --files ./dist/index.js > ./README.md",
+    "tsc:build": "tsc",
+    "build": "run-s -l tsc:build gen:typedoc",
     "gen:typedoc": "typedoc --out ./docs ./src/index.ts",
-    "gen:docs": "run-s -l build gen:typedoc",
+    "gen:docs": "run-s -l tsc:build gen:typedoc",
     "release": "standard-version"
   },
   "keywords": [],
