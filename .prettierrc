@@ -1,0 +1,5 @@
+{
+  "plugins": ["prettier-plugin-jsdoc"],
+  "jsdocSpaces": 2,
+  "jsdocPrintWidth": 80
+}
