@@ -26,7 +26,7 @@ export type PersistentStore<T extends z.ZodTypeAny> = Writable<z.TypeOf<T>> & {
  *
  * SchemaHistory object:
  *
- * ```js
+ * ```ts
  * {
  *   "1.0.0": {
  *     schema: z.object({ ... }),
@@ -38,25 +38,61 @@ export type PersistentStore<T extends z.ZodTypeAny> = Writable<z.TypeOf<T>> & {
  * }
  * ```
  *
- * You need to supply a union of your schema types across all the versions as
- * the type for T. T is not the type of the store, but the type of the schemas
- * in the SchemaHistory object.
+ * Simple example:
+ *
+ * ```ts
+ * const oldSchema = z.object({
+ *   name: z.string(),
+ * });
+ *
+ * const schema = z.object({
+ *   name: z.string(),
+ *   age: z.number(),
+ * });
+ *
+ * const store = persistent<typeof schema, typeof oldSchema>("demo_key", {
+ *   "1.0.0": {
+ *     schema,
+ *     migration: (oldData: { name: string }) => ({ ...oldData, age: 0 }),
+ *   },
+ *   "0.9.0": {
+ *     schema: oldSchema,
+ *   },
+ * });
+ * ```
+ *
+ * You need to supply the type of the schema as the type for T. T is not the
+ * type of the store's value, but should be the type of the latest schema in the
+ * SchemaHistory object. V is the union of all previous schemas used in
+ * migrations and defaults to the base zod type `z.ZodTypeAny`. U is the type of
+ * the store's value and is inferred from T by default.
  *
  * @param  key  A unique key for the store, this will be prefixed with
  *   `silent-persistent-{currentVersion}-`
  * @param  schemaHistory  A record of schemas and migrations keyed by semver
  *   (see above example)
- * @param  currentVersion  The current version of the schema
- * @param  defaultValue  The default value to use if no value is found in
- *   storage
- * @returns  _If you are aware of a way to sensibly infer that union type for T
- *   automatically from `schemaHistory`, please let me know._
+ * @param  DefaultValue  The default value to use if no value is found in
+ *   storage, automatically set if not provided by using Zod's default
+ *   `schemaHistory[currentVersion].parse({})`
+ * @param  currentVersion  The current version of the schema, automatically set
+ *   if not provided by checking the schemaHistory object
+ * @returns  A writable store with a `load` function that returns a promise when
+ *   a persisted value has been loaded or the default value has been set if no
+ *   data was found, a `value` getter that returns the current value (uses a
+ *   reference in the factory function closure rather than Svelte's `get`
+ *   function, if that's a problem for you just use `get(store)` instead), and a
+ *   `__key` property that returns the prefixed key of the store value in
+ *   localforage (so exactly what to look for in devtools when debugging)
  */
-export const persistent = <T extends z.ZodTypeAny, U = z.infer<T>>(
+export const persistent = <
+  T extends z.ZodTypeAny,
+  V extends z.ZodTypeAny | z.ZodTypeAny = z.ZodTypeAny,
+  U = z.infer<T>
+>(
   key: string,
-  schemaHistory: SchemaHistory<T>,
-  currentVersion = getLatestSchemaVersion(schemaHistory),
-  defaultValue = getLatestSchemaDefaultValue(schemaHistory)
+  schemaHistory: SchemaHistory<T, V>,
+  defaultValue = getLatestSchemaDefaultValue(schemaHistory),
+  currentVersion = getLatestSchemaVersion(schemaHistory)
 ): PersistentStore<T> => {
   const processedKey = `silent-persistent-${currentVersion}-${key}`;
   const currentSchema = schemaHistory[currentVersion].schema;
