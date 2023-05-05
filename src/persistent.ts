@@ -11,6 +11,12 @@ import {
 
 import { either as E } from "fp-ts";
 
+export type PersistentStore<T extends z.ZodTypeAny> = Writable<z.TypeOf<T>> & {
+  load: () => Promise<z.TypeOf<T>>;
+  value: z.TypeOf<T>;
+  __key: string;
+};
+
 /**
  * Creates a store that takes a SchemaHistory object and uses localforage to
  * persist its value and zod to validate any mutations.
@@ -37,7 +43,7 @@ import { either as E } from "fp-ts";
  * in the SchemaHistory object.
  *
  * @param  key  A unique key for the store, this will be prefixed with
- *   `silent-screen-{currentVersion}-`
+ *   `silent-persistent-{currentVersion}-`
  * @param  schemaHistory  A record of schemas and migrations keyed by semver
  *   (see above example)
  * @param  currentVersion  The current version of the schema
@@ -51,8 +57,8 @@ export const persistent = <T extends z.ZodTypeAny, U = z.infer<T>>(
   schemaHistory: SchemaHistory<T>,
   currentVersion = getLatestSchemaVersion(schemaHistory),
   defaultValue = getLatestSchemaDefaultValue(schemaHistory)
-): Writable<U> & { load: () => Promise<U>; value: U; __key: string } => {
-  const processedKey = `silent-screen-${currentVersion}-${key}`;
+): PersistentStore<T> => {
+  const processedKey = `silent-persistent-${currentVersion}-${key}`;
   const currentSchema = schemaHistory[currentVersion].schema;
 
   const __ = {
@@ -155,7 +161,3 @@ export const persistent = <T extends z.ZodTypeAny, U = z.infer<T>>(
     },
   };
 };
-
-export type PersistentStore<T extends z.ZodTypeAny> = ReturnType<
-  typeof persistent<T>
->;
