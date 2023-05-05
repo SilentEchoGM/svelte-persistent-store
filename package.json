@@ -1,6 +1,6 @@
 {
   "name": "@silentecho/svelte-persistent-store",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
@@ -9,7 +9,8 @@
     "build": "tsc",
     "gen:jsdoc2md": "jsdoc2md --files ./dist/index.js > ./README.md",
     "gen:typedoc": "typedoc --out ./docs ./src/index.ts",
-    "gen:docs": "run-s -l build gen:typedoc"
+    "gen:docs": "run-s -l build gen:typedoc",
+    "release": "standard-version"
   },
   "keywords": [],
   "author": {
@@ -23,14 +24,15 @@
   "svelte": "src/index.ts",
   "license": "ISC",
   "devDependencies": {
-    "@types/jest": "^29.5.0",
+    "@types/jest": "^29.5.1",
     "@types/semver": "^7.3.13",
     "jest": "^29.5.0",
     "jsdoc-to-markdown": "^8.0.0",
     "npm-run-all": "^4.1.5",
     "prettier": "2.8.7",
     "prettier-plugin-jsdoc": "^0.4.2",
-    "ts-jest": "^29.0.5",
+    "standard-version": "^9.5.0",
+    "ts-jest": "^29.1.0",
     "typedoc": "^0.24.6"
   },
   "peerDependencies": {
@@ -39,7 +41,10 @@
     "zod": "^3.21.4"
   },
   "dependencies": {
+    "fp-ts": "^2.14.0",
     "localforage": "^1.10.0",
-    "semver": "^7.3.8"
+    "semver": "^7.5.0",
+    "svelte": "^3.59.0",
+    "zod": "^3.21.4"
   }
 }
