@@ -1,6 +1,6 @@
 # Getting Started
 
-This package provides a Svelte store that is typed by [Zod](https://github.com/colinhacks/zod) schemas, uses [Fantasy Land](https://github.com/fantasyland/fantasy-land) types with [fp-ts](https://github.com/gcanti/fp-ts), persists data with [localForage](https://github.com/localForage/localForage), and inherently versions data with basic migration features. Will not work correctly in the server context a SvelteKit app (or anywhere the localstorage and IndexedDB facilities are unavailable)
+This package provides a Svelte store that is typed by [Zod](https://github.com/colinhacks/zod) schemas, uses [Fantasy Land](https://github.com/fantasyland/fantasy-land) types with [fp-ts](https://github.com/gcanti/fp-ts), persists data with [localForage](https://github.com/localForage/localForage), and inherently versions data with basic migration features. Will not work correctly in the server context of a SvelteKit app (or anywhere the localstorage and IndexedDB facilities are unavailable)
 
 ## Example usage
 
